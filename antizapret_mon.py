@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import requests
+import csv
+import ipaddress
 
 
-def get_current_state():
+def get_antizapret_current_state():
     r = requests.get('http://api.antizapret.info/all.php?type=json')
 
     if r.status_code != 200:
@@ -13,10 +15,42 @@ def get_current_state():
         f.write(r.text)
 
 
-def get_subnets():
+def read_zi():
+    with open('z-i/dump.csv', 'r', encoding="windows-1251") as f:
+        reader = csv.reader(f, delimiter=';')
+
+        return list(reader)[1:]
+
+
+def is_valid_ip(addr):
+    try:
+        # check what this is valid ipv4
+        ip = ipaddress.ip_address(addr)
+
+        # check what this is global address
+        return ip.is_global
+    except ValueError:
+        return False
+
+
+def is_valid_net(addr):
+    try:
+        net = ipaddress.ip_network(addr)
+        return net.is_global
+    except ValueError:
+        return False
+
+
+def separate(data: list):
+
+
+
     pass
 
 
 if __name__ == '__main__':
-    curstate = get_current_state()
-    print(curstate)
+    zi_data = read_zi()
+
+    print(separate(zi_data))
+
+    pass
