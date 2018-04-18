@@ -68,6 +68,14 @@ def separate(data: list):
         else:
             print(v, 'ignored')
 
+    # post processing addresses, cleaning from networks-overlapped
+
+    for a in addresses:
+        for n in networks:
+            if a in n:
+                print(a, n)
+                addresses.remove(a)
+
     return addresses, networks
 
 
@@ -76,4 +84,11 @@ if __name__ == '__main__':
 
     addresses, networks = separate(zi_data)
 
-    print(len(addresses), len(networks))
+    total_blocked = len(addresses)
+
+    for n in networks:
+        nn = ipaddress.ip_network(n)
+
+        total_blocked += nn.num_addresses - 2  # counting without network and broadcast addresses
+
+    print(networks)
