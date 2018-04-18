@@ -1,4 +1,3 @@
-import requests
 import csv
 import ipaddress
 
@@ -55,7 +54,7 @@ def separate(data: list):
         else:
             print(v, 'ignored')
 
-    # post processing addresses, cleaning from networks-overlapped
+    # post-processing addresses, cleaning from networks-overlapped entries
 
     for a in addresses:
         for n in networks:
