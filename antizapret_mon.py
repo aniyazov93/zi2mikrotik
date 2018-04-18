@@ -42,15 +42,38 @@ def is_valid_net(addr):
 
 
 def separate(data: list):
+    banaddrs = [x[0] for x in data]
 
+    values = []
 
+    for banaddr in banaddrs:
+        if '|' in banaddr:
+            v = [x.strip() for x in banaddr.split('|')]
+            values += v
+        else:
+            values.append(banaddr)
 
-    pass
+    addresses = []
+    networks = []
+
+    for v in values:
+        if is_valid_ip(v):
+            addresses.append(v)
+            continue
+
+        elif is_valid_net(v):
+            networks.append(v)
+            continue
+
+        else:
+            print(v, 'ignored')
+
+    return addresses, networks
 
 
 if __name__ == '__main__':
     zi_data = read_zi()
 
-    print(separate(zi_data))
+    addresses, networks = separate(zi_data)
 
-    pass
+    print(len(addresses), len(networks))
