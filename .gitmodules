@@ -1,0 +1,3 @@
+[submodule "z-i"]
+	path = z-i
+	url = https://github.com/zapret-info/z-i.git
