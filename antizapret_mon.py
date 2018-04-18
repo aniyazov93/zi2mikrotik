@@ -2,6 +2,8 @@
 
 import threading
 import atexit
+import git
+import logging
 
 from time import sleep
 from flask import Flask, jsonify, request, Response
@@ -15,13 +17,24 @@ total_banned = 0
 _lock = threading.Lock()
 _th = None
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+
 
 def update():
     global addresses, networks, total_banned
-    print('Updating info...')
+
+    # pulling new zapretinfo data
+    logging.info('Pulling new data...')
+
+    g = git.cmd.Git('z-i')
+    g.pull()
+
+    logging.info('Parsing...')
+
     zi_data = read_zi()
     total_banned, addresses, networks = separate(zi_data)
-    print('Finished. Total IPs:', total_banned)
+
+    logging.info(f'Finished. Total IPs: {total_banned}')
 
 
 class Updater(threading.Thread):

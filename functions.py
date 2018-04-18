@@ -1,6 +1,7 @@
 import csv
 import ipaddress
 
+
 def read_zi():
     with open('z-i/dump.csv', 'r', encoding="windows-1251") as f:
         reader = csv.reader(f, delimiter=';')
