@@ -1,94 +1,65 @@
 #!/usr/bin/env python3
 
-import requests
-import csv
 import ipaddress
+import threading
+import atexit
+
+from time import sleep
+from flask import Flask, jsonify, make_response
+
+from functions import *
+
+addresses = []
+networks = []
+_lock = threading.Lock()
+_th = None
 
 
-def get_antizapret_current_state():
-    r = requests.get('http://api.antizapret.info/all.php?type=json')
-
-    if r.status_code != 200:
-        return {}
-
-    with open('/tmp/xd123', 'w') as f:
-        f.write(r.text)
+def update():
+    global addresses, networks
+    print('Updating info...')
+    zi_data = read_zi()
+    addresses, networks = separate(zi_data)
+    print('Finished')
 
 
-def read_zi():
-    with open('z-i/dump.csv', 'r', encoding="windows-1251") as f:
-        reader = csv.reader(f, delimiter=';')
-
-        return list(reader)[1:]
-
-
-def is_valid_ip(addr):
-    try:
-        # check what this is valid ipv4
-        ip = ipaddress.ip_address(addr)
-
-        # check what this is global address
-        return ip.is_global
-    except ValueError:
-        return False
+class Updater(threading.Thread):
+    def run(self):
+        global _lock
+        while True:
+            with _lock:
+                update()
+            sleep(120)
 
 
-def is_valid_net(addr):
-    try:
-        net = ipaddress.ip_network(addr)
-        return net.is_global
-    except ValueError:
-        return False
+def create_app():
+    global _th
+    app = Flask(__name__)
 
+    def interrupt():
+        global _th
+        _th.cancel()
 
-def separate(data: list):
-    banaddrs = [x[0] for x in data]
+    _th = Updater()
+    _th.start()
 
-    values = []
+    atexit.register(interrupt)
 
-    for banaddr in banaddrs:
-        if '|' in banaddr:
-            v = [x.strip() for x in banaddr.split('|')]
-            values += v
-        else:
-            values.append(banaddr)
-
-    addresses = []
-    networks = []
-
-    for v in values:
-        if is_valid_ip(v):
-            addresses.append(v)
-            continue
-
-        elif is_valid_net(v):
-            networks.append(v)
-            continue
-
-        else:
-            print(v, 'ignored')
-
-    # post processing addresses, cleaning from networks-overlapped
-
-    for a in addresses:
-        for n in networks:
-            if a in n:
-                print(a, n)
-                addresses.remove(a)
-
-    return addresses, networks
+    return app
 
 
 if __name__ == '__main__':
-    zi_data = read_zi()
+    app = create_app()
 
-    addresses, networks = separate(zi_data)
 
-    total_blocked = len(addresses)
+    @app.route('/info')
+    def info():
+        if _lock.locked():
+            return '', 204
 
-    for n in networks:
-        nn = ipaddress.ip_network(n)
+        return jsonify({
+            'networks': networks,
+            'addresses': addresses
+        })
 
-        total_blocked += nn.num_addresses - 2  # counting without network and broadcast addresses
-
-    print(networks)
+    app.run(host='0.0.0.0', port=3000, threaded=True)
