@@ -1,0 +1,24 @@
+:local hostScriptUrl "<url to service>";
+:local scriptName "rkn_routes.script";
+:local backupFileName "before_rkn";
+:local logPrefix "[RKN routes]";
+
+do {
+  /tool fetch check-certificate=no mode=https url=$hostScriptUrl dst-path=("./".$scriptName);
+  :if ([:len [/file find name=$scriptName]] > 0) do={
+    /system backup save name=$backupFileName;
+    :delay 1s;
+    :if ([:len [/file find name=($backupFileName.".backup")]] > 0) do={
+      /ip routes remove [/ip dns static find comment=RKNbanned];
+      /import file-name=$scriptName;
+      /file remove $scriptName;
+      :log info "$logPrefix AD block script imported, backup file (\"$backupFileName.backup\") created";
+    } else={
+      :log warning "$logPrefix Backup file not created, importing AD block script stopped";
+    }
+  } else={
+    :log warning "$logPrefix AD block script not downloaded, script stopped";
+  }
+} on-error={
+  :log warning "$logPrefix AD block script download FAILED";
+};

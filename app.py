@@ -6,7 +6,7 @@ import git
 import logging
 
 from time import sleep
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, redirect
 
 from functions import *
 
@@ -64,6 +64,11 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
+
+    @app.route('/')
+    def main_page():
+        return redirect('https://github.com/radium88/zi2mikrotik', 307)
+
 
     @app.route('/banned_count')
     def count():

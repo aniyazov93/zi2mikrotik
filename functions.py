@@ -74,7 +74,7 @@ def separate(data: list):
 
 def mikrotik_format(values, gw):
     header = '/ip routes'
-    str = 'add dst-address={addr} gateway={gw} comment=RTKbanned'
+    str = 'add dst-address={addr} gateway={gw} comment=RKNbanned'
 
     fvalues = [str.format(addr=v, gw=gw) for v in values]
 
