@@ -39,7 +39,7 @@
 
   * **Code:** 204 <br />
 
-**Mikrotik format**
+**Mikrotik формат**
 ----
     Вернёт список в формате команд RouterOS.
 
@@ -63,6 +63,34 @@
     * **Code:** 200 <br />
         **Content:** 
         `/ip routes add dst-address=<address or network> gateway=<gateway> comment=RTKbanned`
+
+
+* **Error Response:**
+
+  * **Code:** 204 <br />
+  
+**Общее число заблокированных узлов**
+----
+    Вернёт общее число заблокированных IP адресов. По умолчанию используется формат json
+
+* **URL**
+    /banned_count 
+    
+* **Method:**
+    GET
+    
+* **Parameters:**
+
+    **optional:**     
+    `raw=[bool]` - Отдавать ли только число, без всякого форматирования
+       
+    
+* **Success responce:**
+    * **Code:** 200 <br />
+        **Content:** 
+        `{
+  "total_banned": 16476112
+}`
 
 
 * **Error Response:**
