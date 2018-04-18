@@ -29,7 +29,7 @@ def is_valid_net(addr):
 
 
 def separate(data: list):
-    banaddrs = [x[0] for x in data]
+    banaddrs = list(set([x[0] for x in data]))
 
     values = []
 
@@ -63,4 +63,20 @@ def separate(data: list):
                 print(a, n)
                 addresses.remove(a)
 
-    return addresses, networks
+    total_banned = len(addresses)
+
+    for n in networks:
+        nn = ipaddress.ip_network(n)
+        total_banned += nn.num_addresses - 2  # except net and bcast addresses
+
+    return total_banned, addresses, networks
+
+
+def mikrotik_format(values, gw):
+    header = '/ip routes'
+    str = 'add dst-address={addr} gateway={gw} comment=RTKbanned'
+
+    fvalues = [str.format(addr=v, gw=gw) for v in values]
+
+    return header + '\n' + '\n'.join(fvalues)
+
