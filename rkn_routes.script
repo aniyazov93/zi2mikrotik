@@ -9,7 +9,7 @@ do {
     /system backup save name=$backupFileName;
     :delay 1s;
     :if ([:len [/file find name=($backupFileName.".backup")]] > 0) do={
-      /ip routes remove [/ip dns static find comment=RKNbanned];
+      /ip routes remove [/ip routes find comment=RKNbanned];
       /import file-name=$scriptName;
       /file remove $scriptName;
       :log info "$logPrefix AD block script imported, backup file (\"$backupFileName.backup\") created";
