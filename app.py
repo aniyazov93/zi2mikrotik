@@ -7,6 +7,7 @@ import logging
 
 from time import sleep
 from flask import Flask, jsonify, request, Response, redirect
+from werkzeug.contrib.fixers import ProxyFix
 
 from functions import *
 
@@ -50,6 +51,7 @@ class Updater(threading.Thread):
 def create_app():
     global _th
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 
     def interrupt():
         global _th
