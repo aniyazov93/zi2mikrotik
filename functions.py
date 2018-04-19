@@ -1,6 +1,7 @@
 import csv
 import ipaddress
 import requests
+import logging
 
 from config import *
 
@@ -56,7 +57,7 @@ def separate(data: list):
             continue
 
         else:
-            print(v, 'ignored')
+            logging.warn(f'{str(v)} ignored')
 
     # post-processing addresses, cleaning from networks-overlapped entries
     # O(n*a). too long
