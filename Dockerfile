@@ -21,6 +21,7 @@ COPY --from=base /tmp /tmp
 COPY . /opt
 WORKDIR /opt
 
+RUN git submodule init
 RUN git submodule update --depth 1
 
 RUN pip install --no-index --find-links=/tmp/wheels -r requirements.txt
