@@ -59,11 +59,13 @@ def separate(data: list):
             print(v, 'ignored')
 
     # post-processing addresses, cleaning from networks-overlapped entries
-
-    for a in addresses:
-        for n in networks:
-            if a in n:
-                print(a, n)
+    # O(n*a). too long
+    for n in networks:
+        for a in addresses:
+            addr = ipaddress.ip_address(a)
+            net = ipaddress.ip_network(n)
+            if addr in net:
+                # print(a, n)
                 addresses.remove(a)
 
     total_banned = len(addresses)
