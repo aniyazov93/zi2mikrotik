@@ -62,6 +62,13 @@ def separate(data: list):
     # O(n*a). too long
     for n in networks:
         for a in addresses:
+            addr_foct = a.split('.')[0]
+            net_foct = n.split('.')[0]
+
+            # first octets does not match, no further checks required
+            if addr_foct != net_foct:
+                continue
+
             addr = ipaddress.ip_address(a)
             net = ipaddress.ip_network(n)
             if addr in net:

@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
     @app.route('/banned_count')
     def count():
-        if _lock.locked():
-            return '', 204
+        # if _lock.locked():
+        #     return '', 204
 
         print_raw = request.args.get('raw', False, bool)
 
@@ -87,8 +87,8 @@ if __name__ == '__main__':
 
     @app.route('/info')
     def info():
-        if _lock.locked():
-            return '', 204
+        # if _lock.locked():
+        #     return '', 204
 
         print_networks = request.args.get('networks', False, bool)
         print_addresses = request.args.get('addresses', False, bool)
@@ -112,8 +112,8 @@ if __name__ == '__main__':
     @app.route('/mikrotik')
     def mikrotik():
         global networks, addresses
-        if _lock.locked():
-            return '', 204
+        # if _lock.locked():
+        #     return '', 204
 
         print_networks = request.args.get('networks', False, bool)
         print_addresses = request.args.get('addresses', False, bool)
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         gw = request.args.get('gateway')
 
         if not ((print_networks or print_addresses) and gw):
-            return '', 204
+            return '', 400
 
         values = []
 
