@@ -35,6 +35,7 @@ def update():
     total_banned, addresses, networks = separate(zi_data)
 
     logging.info(f'Finished. Total IPs: {total_banned}')
+    check_myservices(networks)
 
 
 class Updater(threading.Thread):
@@ -89,10 +90,24 @@ if __name__ == '__main__':
         if _lock.locked():
             return '', 204
 
-        return jsonify({
-            'networks': networks,
-            'addresses': addresses
-        })
+        print_networks = request.args.get('networks', False, bool)
+        print_addresses = request.args.get('addresses', False, bool)
+
+        result = {}
+
+        if not (print_networks or print_addresses):
+            result = {
+                'networks': networks,
+                'addresses': addresses
+            }
+        else:
+            if print_addresses:
+                result['addresses'] = addresses
+
+            if print_networks:
+                result['networks'] = networks
+
+        return jsonify(result)
 
     @app.route('/mikrotik')
     def mikrotik():

@@ -1,5 +1,8 @@
 import csv
 import ipaddress
+import requests
+
+from config import *
 
 
 def read_zi():
@@ -80,3 +83,36 @@ def mikrotik_format(values, gw):
 
     return header + '\n' + '\n'.join(fvalues)
 
+
+def send_tg_message(msg):
+    URL = 'https://api.telegram.org/bot'
+    TOKEN = TG_BOT_TOKEN
+
+    message_data = {
+        'chat_id': TG_CHAT_ID,
+        'text': msg,
+        'parse_mode': 'HTML'
+    }
+
+    try:
+        r = requests.post(URL + TOKEN + '/sendMessage', data=message_data)
+    except Exception as e:
+        print(e)
+
+
+def check_myservices(networks: list):
+    # checking what my ip addresses not in range
+    ips = [ipaddress.ip_address(x) for x in ALERT_ADDRESSES]
+
+    nets = [ipaddress.ip_network(x) for x in networks]
+
+    blocked_ips = []
+
+    for i in ips:
+        for n in nets:
+            if i in n:
+                print(f"!!! {str(i)} in blocked network {str(n)} !!!")
+                blocked_ips.append((i, n))
+
+    if blocked_ips:
+        send_tg_message(''.join([f"!!! {x[0] in x[1]} !!!" for x in blocked_ips]))
