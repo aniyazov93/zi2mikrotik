@@ -44,7 +44,7 @@ class Updater(threading.Thread):
         while True:
             with _lock:
                 update()
-            sleep(120)
+            sleep(600)
 
 
 def create_app():

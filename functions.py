@@ -124,4 +124,4 @@ def check_myservices(networks: list):
                 blocked_ips.append((i, n))
 
     if blocked_ips:
-        send_tg_message(''.join([f"!!! {x[0] in x[1]} !!!" for x in blocked_ips]))
+        send_tg_message('<br>'.join([f"!!! {x[0] in x[1]} !!!" for x in blocked_ips]))
